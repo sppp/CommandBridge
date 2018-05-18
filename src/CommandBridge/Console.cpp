@@ -21,6 +21,7 @@ Console::Console() : cmd(this) {
 }
 
 void Console::SetView(int i) {
+	view = i;
 	cmd.Hide();
 	wordapp.Hide();
 	switch(i) {
@@ -36,18 +37,18 @@ void Console::AddProgram(String cmd, Callback1<String> cb) {
 }
 
 void Console::ConsoleMenu(Bar& bar) {
-	if (VIEW_WORD)
+	if (view == VIEW_WORD)
 		wordapp.FileBar(bar);
 	
 }
 
 String Console::GetMenuTitle() {
-	if (VIEW_WORD) return "Word";
+	if (view == VIEW_WORD) return "Word";
 	return "";
 }
 
 String Console::GetTitle() {
-	if (VIEW_WORD) return wordapp.GetTitle();
+	if (view == VIEW_WORD) return wordapp.GetTitle();
 	return "Console";
 }
 
@@ -74,6 +75,7 @@ String Console::Command(const String& cmd) {
 		}
 	}
 	
+	throw Exc("Invalid command");
 	return ret;
 }
 
@@ -130,9 +132,8 @@ void Console::ShowFile(String arg) {
 }
 
 void Console::EditFile(String arg) {
-	
-	
 	SetView(VIEW_WORD);
+	wordapp.SetFocus();
 }
 
 void Console::DownloadFile(String arg) {

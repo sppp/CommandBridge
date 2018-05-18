@@ -56,9 +56,12 @@ GUI_APP_MAIN {
 			last_tray = &tray;
 			tray.Run();
 			is_exit = tray.IsExit();
+			is_cons_toggled = !is_exit;
 		}
 		else {
+			#ifndef flagDEBUG
 			cons.PostTopMost();
+			#endif
 			cons.Run();
 			cons.CloseTopCtrls();
 		}

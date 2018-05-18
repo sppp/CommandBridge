@@ -3,11 +3,8 @@
 #define MAX_BUFF 4096
 
 FTPServer::FTPServer() {
-	#ifdef flagWIN32
-	port = 21;
-	#else
 	port = 10021;
-	#endif
+	
 	running = false;
 	stopped = true;
 	client_counter = 0;

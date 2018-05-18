@@ -44,6 +44,7 @@ protected:
 	int id_counter;
 	
 	void ShowConsole(int i);
+	void ShowTab();
 	
 public:
 	typedef CommandBridge CLASSNAME;
@@ -51,6 +52,7 @@ public:
 	
 	Console& NewConsole();
 	Console* GetActiveConsole();
+	void Quit() {PostClose();}
 	void AddConsole();
 	void CloseTab();
 	void PreviousTab();

@@ -14,10 +14,11 @@ protected:
 	Word wordapp;
 	One<FTPServer> ftpd;
 	
-	CommandBridge* bridge;
+	CommandBridge* bridge = NULL;
 	ArrayMap<String, Callback1<String> > commands;
 	String out, err;
 	String cwd;
+	int view = VIEW_CMD;
 	
 	enum {VIEW_CMD, VIEW_WORD};
 	void SetView(int i);

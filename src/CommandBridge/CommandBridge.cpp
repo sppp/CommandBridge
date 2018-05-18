@@ -21,7 +21,7 @@ CommandBridge::CommandBridge() {
 	tabs.MinTabCount(0);
 	tabs.Crosses();
 	tabs.WhenClose << THISBACK(TabClosed);
-	
+	tabs.WhenAction << THISBACK(ShowTab);
 	InitWord();
 }
 
@@ -65,6 +65,14 @@ void CommandBridge::NextTab() {
 	if (active < 0) active += tabs.GetCount();
 	if (active < 0 || active >= tabs.GetCount()) return;
 	tabs.SetCursor(active);
+}
+
+void CommandBridge::ShowTab() {
+	int active = tabs.GetCursor();
+	if (active < 0 || active >= tabs.GetCount()) return;
+	int i = tabs.GetKey(active);
+	ShowConsole(i);
+	RefreshMenu();
 }
 
 void CommandBridge::ShowConsole(int id) {
@@ -135,6 +143,7 @@ void CommandBridge::RefreshMenu() {
 
 void CommandBridge::AppMenu(Bar& menu) {
 	menu.Add(AK_OPENCMD, THISBACK(AddConsole));
+	menu.Add(AK_QUIT, THISBACK(Quit));
 }
 
 void CommandBridge::ViewMenu(Bar& menu) {
@@ -188,7 +197,7 @@ void TrayApp::LeftDouble() {
 }
 
 void TrayApp::LeftDown() {
-	Info("CommandBridge", "You have clicked the CommandBridge!");
+	Close();
 }
 
 void TrayApp::Menu(Bar& bar) {

@@ -6,14 +6,33 @@ ArrayMap<String, EscValue>& UscGlobal() {
 	return global;
 }
 
+void EscPow(EscEscape& e)
+{
+	if (e[0].IsNumber() && e[1].IsNumber()) {
+		double a = e[0].GetNumber();
+		double b = e[1].GetNumber();
+		e = pow(a, b);
+	}
+}
+
+void EscSqrt(EscEscape& e)
+{
+	if (e[0].IsNumber()) {
+		double a = e[0].GetNumber();
+		e = sqrt(a);
+	}
+}
+
 CommandPrompt::CommandPrompt(Console* cons) : cons(cons)
 {
 	Highlight("calc");
 	NoHorzScrollbar();
 	HideBar();
+	Escape(UscGlobal(), "pow(x,y)", EscPow);
+	Escape(UscGlobal(), "sqrt(x)", EscSqrt);
 }
 
-int LfToSpaceFilter(int c)
+inline int LfToSpaceFilter(int c)
 {
 	return c == '\n' ? ' ' : c;
 }
@@ -36,27 +55,27 @@ void CommandPrompt::Execute()
 		Paste(s);
 		return;
 	}
+
 	String txt;
+	bool try_math = false;
+	String s = TrimBoth(GetUtf8Line(li));
+	if (s.IsEmpty()) return;
 	try {
-		String s = TrimBoth(GetUtf8Line(li));
-		if (s.IsEmpty()) return;
-		
-		// Do math if line starts with numbers
-		char first = s[0];
-		if (IsDigit(first) || first == '-' || first == '+') {
-			ArrayMap<String, EscValue>& g = UscGlobal();
-			for(int i = 0; i < g.GetCount(); i++)
-				vars.GetAdd(g.GetKey(i)) = g[i];
-			if(IsNull(s))
-				return;
-			EscValue v = Evaluatex(s, vars);
-			txt = v.ToString(GetSize().cx / max(1, GetFont().Info()['x']), 4, true);
-			vars.GetAdd("_") = v;
-		}
-		// Otherwise send command to command bridge
-		else {
-			txt = cons->Command(s);
-		}
+		txt = cons->Command(s);
+	}
+	catch (Exc e) {
+		try_math = true;
+	}
+	
+	try {
+		ArrayMap<String, EscValue>& g = UscGlobal();
+		for(int i = 0; i < g.GetCount(); i++)
+			vars.GetAdd(g.GetKey(i)) = g[i];
+		if(IsNull(s))
+			return;
+		EscValue v = Evaluatex(s, vars);
+		txt = v.ToString(GetSize().cx / max(1, GetFont().Info()['x']), 4, true);
+		vars.GetAdd("_") = v;
 	}
 	catch(CParser::Error e) {
 		const char *x = strchr(e, ':');

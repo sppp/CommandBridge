@@ -259,19 +259,19 @@ bool Ftp::TransferData(int cmd, const String& request, Stream& file, int64 size,
 			PutGet(request);
 			if(!ReplyIsWait())
 				break;
-			for(;;) 
+			for(;;)
 				if(data_socket.Accept(listener)) {
-					cmd == GET	
+					cmd == GET
 					? GetData(data_socket, file, size, type, log)
 					: PutData(data_socket, file, type);
-					break;		
+					break;
 				}
 			break;
 		}
 		case PASSIVE: {
 			if(!data_socket.Connect(addr, port))
 				break;
-			if(ftps) 
+			if(ftps)
 				if(!data_socket.StartSSL() || !data_socket.IsSSL()) {
 					LLOG("-- Negotiation error. Couldn't put data socket into FTPS mode.");
 					break;
@@ -279,7 +279,7 @@ bool Ftp::TransferData(int cmd, const String& request, Stream& file, int64 size,
 			PutGet(request);
 			if(!ReplyIsWait())
 				break;
-			cmd == GET	
+			cmd == GET
 				? GetData(data_socket, file, size, type, log)
 				: PutData(data_socket, file, type);
 			break;
