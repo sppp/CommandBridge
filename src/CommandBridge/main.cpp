@@ -1,8 +1,16 @@
+#include <signal.h>
 #include "CommandBridge.h"
 
 #define IMAGECLASS CommandBridgeImg
 #define IMAGEFILE <CommandBridge/CommandBridge.iml>
 #include <Draw/iml_source.h>
+
+volatile sig_atomic_t hupflag = 0;
+
+extern "C" void hangup(int) {
+	hupflag = 1;
+}
+
 
 bool is_tray;
 bool is_cons_toggled;
@@ -17,6 +25,13 @@ void ToggleWindow(CommandBridge* cons) {
 }
 
 GUI_APP_MAIN {
+	#if defined flagPOSIX
+	signal(SIGHUP, hangup);
+	#elif defined flagWIN32
+	signal(SIGBREAK, hangup);
+	#endif
+	
+	
 	
 	if (!CommandLine().IsEmpty()) {
 		if (CommandLine()[0] == "ftpd") {
@@ -71,6 +86,9 @@ GUI_APP_MAIN {
 		#ifdef flagDEBUG
 		is_exit = true;
 		#endif
+		
+		if (hupflag)
+			is_exit = true;
 	}
 	
 	SaveFile(keyfile, StoreKeys());

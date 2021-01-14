@@ -107,7 +107,7 @@ void CommandBridge::MainMenu(Bar& menu) {
 	if (cons){
 		String cons_menu = cons->GetMenuTitle();
 		if (!cons_menu.IsEmpty()) {
-			menu.Add(t_(cons_menu), callback(cons, &Console::ConsoleMenu));
+			menu.Add(cons_menu, callback(cons, &Console::ConsoleMenu));
 		}
 	}
 }
