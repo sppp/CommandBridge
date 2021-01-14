@@ -1,2 +1,2 @@
 # CommandBridge
-A custom drop-down console for Windows.
+A drop-down console made with U++ framework.
